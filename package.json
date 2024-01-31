@@ -4,7 +4,9 @@
   "description": "",
   "main": "",
   "scripts": {
-    "dev": "python -m http.server --directory public"
+    "dev": "python -m http.server --directory public",
+    "build": "tsc",
+    "w": "tsc --watch"
   },
   "author": "",
   "license": "ISC",
