@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tiny games</title>
+  <script>
+const games = [
+  {
+    name: 'circled square',
+    script: './circle.js',
+  },
+  {
+    name: 'breakout',
+    script: './breakout.js',
+  },
+  {
+    name: 'walls',
+    script: './walls.js',
+  },
+];
+
+let runningGame = null;
+function selectGame(index) {
+  const game = games[index];
+  if (runningGame) {
+    runningGame.destroy();
+  }
+  import(game.script).then(async (gameModule) => {
+    runningGame = await gameModule.load();
+  });
+}
+
+window.addEventListener('load', () => {
+  let gameIndex = 0;
+  if (window.location.search) {
+    const gameName = decodeURIComponent(window.location.search.slice(1));
+    const queryGameIndex = games.findIndex(g => g.name === gameName);
+    if (queryGameIndex !== -1) {
+      gameIndex = queryGameIndex;
+    }
+  }
+  selectGame(gameIndex);
+
+  const select = document.getElementById('game-selector');
+  for (let i = 0; i < games.length; i++) {
+    const game = games[i];
+    const option = document.createElement('option');
+    option.value = i;
+    option.innerText = game.name;
+    if (i === gameIndex) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  select.addEventListener('change', (evt) => {
+    selectGame(parseInt(evt.target.value, 10));
+  });
+});
+  </script>
+  <style>
+body {
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  font-size: 12pt;
+  font-family: monospace;
+}
+canvas {
+  border: 4px solid white;
+  image-rendering: pixelated;
+  border-radius: 6px;
+}
+select {
+  color: white;
+  background-color: black;
+  font-size: 12pt;
+  font-family: monospace;
+  border: 4px solid white;
+  padding: 4px;
+  border-radius: 6px;
+}
+  </style>
+</head>
+<body>
+  <canvas width="640" height="480" id="game"></canvas>
+  <select id="game-selector"></select>
+  <div>controls: wasd to move, j to do things</div>
+</body>
+</html>
